@@ -1,8 +1,7 @@
 import json
-from pathlib import Path
 import pandas as pd
-from typing import Union
-
+from pathlib import Path
+from typing import Dict, Union, Optional
 
 def load_json(file_path: str | Path) -> dict:
     """
@@ -28,30 +27,47 @@ def load_json(file_path: str | Path) -> dict:
             data = json.load(f)
     except json.JSONDecodeError as e:
         raise ValueError(f"Le fichier {file_path} n'est pas un JSON valide : {e}")
-
+    except IsADirectoryError as e :
+        raise ValueError(f"Le fichier {file_path} n'est pas un fichier valide : {e}")
     return data
 
 
+def load_dataframes(data: dict, name: Optional[str] = None) -> Union[pd.DataFrame, Dict[str, pd.DataFrame]]:
+    """
+    Découpe le dictionnaire COCO fourni en plusieurs DataFrames (info, licenses, categories, images, annotations).
 
-# def load_json_as_dataframe(data: Union[dict, list]) -> pd.DataFrame:
-#     """
-#     Convertit un objet JSON (dict ou list de dicts) en DataFrame pandas.
+    Args:
+        data (dict): Dictionnaire issu du JSON COCO.
+        name (str, optional): Nom du DataFrame à extraire. 
+            Doit être l'une des clés suivantes : "info", "licenses", "categories", "images", "annotations".
+            Si None, renvoie un dictionnaire contenant tous les DataFrames.
 
-#     Args:
-#         data (dict ou list): Données JSON déjà chargées.
+    Raises:
+        ValueError: Si `name` n'est pas une des clés valides.
 
-#     Returns:
-#         pd.DataFrame: Contenu du JSON sous forme de DataFrame.
+    Returns:
+        Union[pd.DataFrame, Dict[str, pd.DataFrame]]:
+            - Si `name` est fourni → le DataFrame correspondant.
+            - Sinon → un dictionnaire {nom: DataFrame}.
+    """
+    dfs = {
+        "info": pd.DataFrame(data["info"], index=[0]),
+        "licenses": pd.DataFrame(data["licenses"], index=[0]),
+        "categories": pd.DataFrame(data["categories"]),
+        "images": pd.DataFrame(data["images"]),
+        "annotations": pd.DataFrame(data["annotations"])
+    }
 
-#     Raises:
-#         ValueError: Si le contenu JSON n'est pas compatible avec DataFrame.
-#     """
-#     if isinstance(data, list):
-#         df = pd.DataFrame(data)
-#     elif isinstance(data, dict):
-#         df = pd.DataFrame([data])
-#     else:
-#         raise ValueError("Le contenu JSON n'est pas un format compatible avec DataFrame")
+    if name:
+        if name not in dfs:
+            raise ValueError(f"Nom invalide : {name}. Choisis parmi {list(dfs.keys())}")
+        return dfs[name]
 
-#     return df
+    return dfs
 
+
+dict = load_json("/home/nabil_simplon/wildfire-detection/data/_annotations.coco.json")
+print(type(dict))
+
+data= load_dataframes(dict, 'info')
+print(type(data))
