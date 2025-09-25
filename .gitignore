@@ -6,6 +6,7 @@ dist/
 wheels/
 *.egg-info
 /data
+.zip
 
 # Virtual environments
 .venv
@@ -13,4 +14,4 @@ wheels/
 
 # notebooks
 notebook_model_nabil.ipynb
-notebook_nabil.ipynb
+notebook_nabil.ipynb*.zip
