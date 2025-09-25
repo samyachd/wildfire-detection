@@ -11,3 +11,6 @@ wheels/
 .venv
 
 
+# notebooks
+notebook_model_nabil.ipynb
+notebook_nabil.ipynb

@@ -1,0 +1,11 @@
+# Racine du dataset
+path: /home/nabil_simplon/wildfire-detection/dataset
+
+# Chemins relatifs vers les images pour chaque split
+train: images/train
+val: images/val
+test: images/test
+
+# Dictionnaire des classes (ici un unique label wildfire)
+names:
+  0: fire

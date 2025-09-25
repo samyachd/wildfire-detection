@@ -8,5 +8,6 @@ dependencies = [
     "fiftyone>=1.8.0",
     "matplotlib>=3.10.6",
     "pytest>=8.4.2",
+    "ultralytics>=8.3.203",
     "yolo>=0.3.1",
 ]
