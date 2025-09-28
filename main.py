@@ -1,6 +1,11 @@
+from pipeline import data_pipeline
+
 def main():
-    print("Hello from wildfire-detection!")
-
-
+    """Exécute le pipeline de traitement de données
+    """
+    
+    print("Traitement des données")
+    data_pipeline()
+    
 if __name__ == "__main__":
     main()

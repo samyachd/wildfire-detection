@@ -3,7 +3,7 @@ Commandes :
 uv run: Run a script.
 uv add --script: Add a dependency to a script.
 uv remove --script: Remove a dependency from a script.
-
+source .venv/bin/activate
 
 uv init: Create a new Python project.
 uv add: Add a dependency to the project.

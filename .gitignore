@@ -6,8 +6,11 @@ dist/
 wheels/
 *.egg-info
 /data
+/data_filtered
+/datasets
 
 # Virtual environments
 .venv
 
 
+notebook_samy.ipynb
