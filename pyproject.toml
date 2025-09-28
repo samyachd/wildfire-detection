@@ -6,9 +6,14 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "fiftyone>=1.8.0",
+    "google>=3.0.0",
     "ipykernel>=6.30.1",
     "ipywidgets>=8.1.7",
     "matplotlib>=3.10.6",
+    "pylance>=0.37.0",
+    "pytest>=8.4.2",
+    "scikit-learn>=1.7.2",
+    "scipy>=1.16.2",
     "ultralytics>=8.3.203",
     "yolo>=0.3.1",
 ]

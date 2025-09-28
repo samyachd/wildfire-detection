@@ -1,5 +1,7 @@
 import json
-import os
+import shutil
+from pathlib import Path
+from typing import List
 import pandas as pd
 
 def rm_no_annots(df1: pd.DataFrame, df2: pd.DataFrame,
@@ -90,32 +92,45 @@ def locate_files(df1: pd.DataFrame, df2: pd.DataFrame,
 
     return files_name
 
-def rm_files(folder: str, files_to_remove: list):
+
+def duplicate_and_rm_files(folder: str, files_to_remove: List[str], new_folder: str = "data_filtered"):
     """
-    Supprime une liste de fichiers dans un dossier donné.
+    Copie uniquement les fichiers .jpg d'un dossier dans un nouveau dossier,
+    en excluant une liste de fichiers.
 
     Args:
-        folder (str): Chemin relatif ou absolu du dossier contenant les fichiers
-        files_to_remove (list): Liste des noms de fichiers à supprimer
+        folder (str): Chemin relatif ou absolu du dossier source.
+        files_to_remove (list): Liste des noms de fichiers .jpg à exclure.
+        new_folder (str): Nom du dossier dupliqué. Par défaut "data_filtered" dans le même répertoire.
+
+    Returns:
+        Path: Chemin du nouveau dossier créé.
     """
-    path = os.path.join(os.getcwd(), folder)
+    source = Path(folder).resolve()
 
-    if not os.path.isdir(path):
-        print(f"Le dossier {path} n'existe pas.")
-        return
+    if not source.is_dir():
+        print(f"Le dossier {source} n'existe pas.")
+        return None
 
-    for file_name in files_to_remove:
-        location = os.path.join(path, file_name)
+    new_folder = Path(new_folder)
+    if not new_folder.is_absolute():
+        new_folder = source.parent / new_folder
 
-        try:
-            os.remove(location)
-            print(f"{file_name} a bien été supprimé du dossier {path}")
-        except FileNotFoundError:
-            print(f"Fichier {file_name} introuvable dans {path}")
-        except PermissionError:
-            print(f"Pas la permission de supprimer {file_name} dans {path}")
-        except Exception as e:
-            print(f"Erreur lors de la suppression de {file_name}: {e}")
+    if new_folder.exists():
+        print(f"Le dossier {new_folder} existe déjà.")
+        return None
+    new_folder.mkdir(parents=True)
+
+    jpg_files = [f for f in source.iterdir() if f.is_file() and f.suffix.lower() == ".jpg"]
+
+    for file_path in jpg_files:
+        if file_path.name not in files_to_remove:
+            shutil.copy2(file_path, new_folder / file_path.name)
+        else:
+            print(f"{file_path.name} ignoré (présent dans files_to_remove)")
+
+    print(f"Nouveau dossier créé : {new_folder}")
+    return new_folder
 
 def save_json(data, chemin_fichier_sortie):
     """

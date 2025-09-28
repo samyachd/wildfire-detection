@@ -1,11 +1,15 @@
 from prepare_data.data_loader import load_dataframes, load_json
-from prepare_data.data_explorer import data_infos, files_extension, compare_files, inv_values, ids_check
-from prepare_data.data_cleaner import  rm_no_annots, rm_files, save_json, locate_files, combine_dataframes
+from prepare_data.data_explorer import files_extension, compare_files, inv_values, ids_check
+from prepare_data.data_cleaner import  rm_no_annots, duplicate_and_rm_files, save_json, locate_files, combine_dataframes
+from prepare_data.data_preparation import test_split, create_targets
 import pandas as pd
 
 path = "/home/achar/test_bash/wildfire-detection/data/_annotations.coco.json"
 folder = "data"
 json_filename = "_annotations.coco.json"
+target_dir = "datasets"
+origin_dir = "data_filtered"
+subdir = ["test", "train", "val"]
 
 def data_pipeline():
     
@@ -33,7 +37,7 @@ def data_pipeline():
 
     df_filtered = rm_no_annots(df_images, df_annotations) # On supprime les images sans annotations dans le df
     files_list = locate_files(df_annotations, df_images)
-    rm_files(folder, files_list)
+    duplicate_and_rm_files(folder, files_list)
     dfs = {
         "info" : df_info,
         "licenses": df_licenses,
@@ -42,9 +46,28 @@ def data_pipeline():
         "annotations":df_annotations
     }
     json_filtered = combine_dataframes(dfs)
-    save_json(json_filtered, "data/_annotations_filtered.coco.json")
+    save_json(json_filtered, "data_filtered/_annotations_filtered.coco.json")
 
     print("Data cleaning finished, completed succesfully")
+    print("Data preparation started ...")
+
+    create_targets(origin_dir, target_dir)
+    test_split(origin_dir, target_dir)
+
+    content = """\
+    test: test/images
+    train: train/images
+    val: val/images
+    names:
+     0: wildfire
+     1: fire
+    nc: 2
+    """
+
+    with open(target_dir+"/data.yaml", "w", encoding="utf-8") as f:
+        f.write(content)
+
+    print("Data preparation finished, all done!")
 
 
 
